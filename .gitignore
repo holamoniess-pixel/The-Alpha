@@ -6,12 +6,14 @@
 # ===================
 # DOCUMENTATION (PRIVATE)
 # ===================
-*.md
+# README.md is allowed for public use
+README.md
 LICENSE
 CHANGELOG*
 HISTORY*
 CREDITS*
 CONTRIBUTING*
+*.md
 
 # ===================
 # Dependencies
