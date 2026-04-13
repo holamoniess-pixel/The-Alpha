@@ -1,0 +1,78 @@
+# Alpha and Omega Configuration File
+# Voice settings
+wake_word: hey alpha
+language: en
+voice_model: whisper-base
+voice_sensitivity: 0.7
+
+# AI settings
+llm_model: llama-7b-q4
+context_length: 4096
+temperature: 0.7
+
+# Memory settings
+memory_limit_mb: 1000
+memory_retention_days: 90
+
+# Learning settings
+learning_enabled: true
+pattern_threshold: 3
+auto_suggest: true
+
+# Automation settings
+automation_confirmation: true
+dangerous_actions_blocked: true
+
+# Performance settings
+gpu_acceleration: true
+num_threads: 8
+batch_size: 1
+
+# Startup settings
+auto_start: true
+minimize_to_tray: false
+show_splash: true
+
+# Security settings
+require_wake_word: true
+max_command_length: 100
+timeout_seconds: 30
+
+# Logging settings
+log_level: INFO
+log_file: alpha_omega.log
+max_log_size_mb: 50
+
+# Application paths (Windows)
+app_paths:
+  chrome: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
+  firefox: 'C:\\Program Files\\Mozilla Firefox\\firefox.exe'
+  notepad: 'C:\\Windows\\System32\\notepad.exe'
+  calculator: 'C:\\Windows\\System32\\calc.exe'
+  explorer: 'C:\\Windows\\explorer.exe'
+  cmd: 'C:\\Windows\\System32\\cmd.exe'
+  taskmgr: 'C:\\Windows\\System32\\taskmgr.exe'
+  word: 'C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE'
+  excel: 'C:\\Program Files\\Microsoft Office\\root\\Office16\\EXCEL.EXE'
+
+# Custom commands
+custom_commands:
+  morning_routine:
+    steps:
+      - action: open
+        target: chrome
+      - action: type
+        text: gmail.com
+      - action: wait
+        seconds: 5
+      - action: open
+        target: notepad
+  
+  work_setup:
+    steps:
+      - action: open
+        target: chrome
+      - action: open
+        target: excel
+      - action: open
+        target: word

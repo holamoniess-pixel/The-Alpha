@@ -1,0 +1,25 @@
+{
+  "name": "smart-agent-task-runner",
+  "version": "1.0.0",
+  "description": "Smart Agent Task Runner with sequential execution and complexity detection",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "test": "jest"
+  },
+  "keywords": ["agent", "automation", "task-runner", "typescript"],
+  "author": "Smart Agent Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "ts-node": "^10.9.0",
+    "jest": "^29.0.0",
+    "@types/jest": "^29.0.0"
+  },
+  "dependencies": {
+    "util": "^0.12.5"
+  }
+}

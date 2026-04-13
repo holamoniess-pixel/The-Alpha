@@ -1,0 +1,69 @@
+# Core dependencies
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+websockets==12.0
+pydantic==2.5.0
+pydantic-settings==2.1.0
+pyyaml==6.0.1
+
+# Security and cryptography
+cryptography==41.0.8
+passlib[bcrypt]==1.7.4
+python-jose[cryptography]==3.3.0
+
+# Windows integration
+pywin32==306
+wmi==1.5.1
+
+# Database and storage
+aiosqlite==0.19.0
+
+# Audio and voice processing
+speechrecognition==3.10.0
+pyaudio==0.2.11
+sounddevice==0.4.6
+pyttsx3==2.90
+
+# UI automation
+pyautogui==0.9.54
+pynput==1.7.6
+pillow==10.1.0
+pyperclip==1.8.2
+
+# Computer vision
+opencv-python==4.8.1.78
+numpy==1.26.2
+
+# LLM and AI
+torch==2.1.1
+transformers==4.35.2
+requests==2.31.0
+httpx==0.25.2
+
+# Local LLM support
+llama-cpp-python==0.2.20
+
+# Voice recognition (Vosk for offline)
+vosk==0.3.45
+
+# Browser automation
+playwright==1.40.0
+
+# OCR
+pytesseract==0.3.10
+easyocr==1.7.1
+
+# Screen capture
+mss==9.0.1
+
+# Scheduling
+croniter==1.4.1
+
+# Monitoring and telemetry
+psutil==5.9.6
+
+# Development dependencies
+pytest==7.4.3
+pytest-asyncio==0.21.1
+black==23.11.0
+mypy==1.7.1

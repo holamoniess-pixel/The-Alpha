@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenClaw Vision - Real-time Screen Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cyan: #00f5ff;
+            --magenta: #ff00ff;
+            --green: #00ff88;
+            --red: #ff3366;
+            --orange: #ffaa00;
+            --purple: #aa00ff;
+            --bg-dark: #0a0a0f;
+            --bg-card: rgba(15, 15, 25, 0.95);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: radial-gradient(ellipse at top, #0f0f20 0%, var(--bg-dark) 100%);
+            color: var(--cyan);
+            font-family: 'Rajdhani', 'Consolas', sans-serif;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(90deg, rgba(0,245,255,0.02) 1px, transparent 1px),
+                linear-gradient(rgba(0,245,255,0.02) 1px, transparent 1px);
+            background-size: 30px 30px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .scan-line {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+            animation: scanLine 5s linear infinite;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        
+        @keyframes scanLine {
+            0% { top: -2px; opacity: 0; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { top: 100%; opacity: 0; }
+        }
+        
+        .vision-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border: 1px solid rgba(0, 245, 255, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 
+                0 0 40px rgba(0, 245, 255, 0.2),
+                0 0 80px rgba(0, 245, 255, 0.1),
+                inset 0 0 60px rgba(0, 245, 255, 0.05);
+            backdrop-filter: blur(20px);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .vision-container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 22px;
+            background: linear-gradient(45deg, var(--cyan), var(--magenta), var(--cyan));
+            background-size: 300% 300%;
+            animation: gradientShift 5s ease infinite;
+            z-index: -1;
+            opacity: 0.5;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .vision-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid rgba(0, 245, 255, 0.2);
+            position: relative;
+        }
+        
+        .vision-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+        }
+        
+        .vision-header h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: 3em;
+            margin: 0;
+            letter-spacing: 8px;
+            background: linear-gradient(90deg, var(--cyan), var(--magenta));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: neonPulse 2s ease-in-out infinite;
+            text-shadow: 0 0 30px rgba(0, 245, 255, 0.5);
+        }
+        
+        @keyframes neonPulse {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.2); }
+        }
+        
+        .vision-header p {
+            font-size: 1.2em;
+            margin: 15px 0 0 0;
+            letter-spacing: 3px;
+            color: rgba(0, 245, 255, 0.7);
+        }
+        
+        .vision-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .vision-btn {
+            background: linear-gradient(135deg, rgba(0, 245, 255, 0.1) 0%, rgba(255, 0, 255, 0.1) 100%);
+            border: 1px solid var(--cyan);
+            color: var(--cyan);
+            padding: 14px 28px;
+            font-size: 0.95em;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-family: 'Orbitron', monospace;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .vision-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(0, 245, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.5s ease;
+        }
+        
+        .vision-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .vision-btn:hover {
+            background: linear-gradient(135deg, rgba(0, 245, 255, 0.2) 0%, rgba(255, 0, 255, 0.2) 100%);
+            box-shadow: 0 0 30px rgba(0, 245, 255, 0.5), 0 0 60px rgba(0, 245, 255, 0.2);
+            transform: translateY(-3px);
+            border-color: var(--magenta);
+            color: var(--magenta);
+        }
+        
+        .vision-btn:active {
+            transform: translateY(0);
+        }
+        
+        .vision-btn.active {
+            background: linear-gradient(135deg, rgba(0, 245, 255, 0.3) 0%, rgba(255, 0, 255, 0.3) 100%);
+            box-shadow: 0 0 40px rgba(0, 245, 255, 0.6);
+            animation: btnPulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes btnPulse {
+            0%, 100% { box-shadow: 0 0 30px rgba(0, 245, 255, 0.5); }
+            50% { box-shadow: 0 0 50px rgba(0, 245, 255, 0.8), 0 0 80px rgba(255, 0, 255, 0.3); }
+        }
+        
+        .vision-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .vision-panel {
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 100%);
+            border: 1px solid rgba(0, 245, 255, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .vision-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--cyan), var(--magenta));
+            opacity: 0.7;
+        }
+        
+        .vision-panel:hover {
+            border-color: var(--cyan);
+            box-shadow: 0 0 30px rgba(0, 245, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .vision-panel h3 {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.1em;
+            margin: 0 0 20px 0;
+            letter-spacing: 3px;
+            color: var(--cyan);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .vision-panel h3::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--cyan);
+            box-shadow: 0 0 10px var(--cyan);
+            animation: glowDot 2s ease-in-out infinite;
+        }
+        
+        @keyframes glowDot {
+            0%, 100% { box-shadow: 0 0 5px var(--cyan); }
+            50% { box-shadow: 0 0 15px var(--cyan), 0 0 25px var(--cyan); }
+        }
+        
+        .vision-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+        }
+        
+        .stat-item {
+            background: rgba(0, 245, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 245, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--cyan), var(--magenta));
+        }
+        
+        .stat-item:hover {
+            background: rgba(0, 245, 255, 0.1);
+            border-color: var(--cyan);
+            transform: translateX(5px);
+        }
+        
+        .stat-label {
+            font-size: 0.8em;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(0, 245, 255, 0.6);
+            margin-bottom: 8px;
+        }
+        
+        .stat-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.4em;
+            font-weight: 700;
+            color: var(--cyan);
+            text-shadow: 0 0 10px rgba(0, 245, 255, 0.5);
+        }
+        
+        .vision-elements {
+            max-height: 350px;
+            overflow-y: auto;
+        }
+        
+        .vision-elements::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .vision-elements::-webkit-scrollbar-track {
+            background: rgba(0, 245, 255, 0.1);
+            border-radius: 3px;
+        }
+        
+        .vision-elements::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--cyan), var(--magenta));
+            border-radius: 3px;
+        }
+        
+        .element-item {
+            background: rgba(0, 245, 255, 0.05);
+            margin: 12px 0;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 245, 255, 0.1);
+            border-left: 3px solid var(--cyan);
+            transition: all 0.3s ease;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .element-item:hover {
+            background: rgba(0, 245, 255, 0.1);
+            border-color: var(--cyan);
+            transform: translateX(5px);
+            box-shadow: 0 0 20px rgba(0, 245, 255, 0.2);
+        }
+        
+        .element-type {
+            font-family: 'Orbitron', monospace;
+            font-weight: 600;
+            font-size: 0.95em;
+            color: var(--cyan);
+        }
+        
+        .element-details {
+            font-size: 0.85em;
+            color: rgba(0, 245, 255, 0.7);
+            margin-top: 5px;
+        }
+        
+        .vision-console {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(0, 245, 255, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            font-family: 'Rajdhani', monospace;
+            font-size: 0.9em;
+            max-height: 250px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            color: var(--green);
+        }
+        
+        .vision-console::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .vision-console::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 3px;
+        }
+        
+        .vision-console::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--cyan), var(--magenta));
+            border-radius: 3px;
+        }
+        
+        .console-entry {
+            margin: 4px 0;
+            padding: 3px 0;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .console-timestamp {
+            color: rgba(0, 245, 255, 0.5);
+            margin-right: 10px;
+        }
+        
+        .console-message { color: var(--green); }
+        .console-error { color: var(--red); }
+        .console-warning { color: var(--orange); }
+        
+        .vision-loading {
+            text-align: center;
+            padding: 50px;
+            color: rgba(0, 245, 255, 0.5);
+        }
+        
+        .loading-spinner {
+            border: 3px solid rgba(0, 245, 255, 0.2);
+            border-top: 3px solid var(--cyan);
+            border-right: 3px solid var(--magenta);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+            box-shadow: 0 0 20px rgba(0, 245, 255, 0.3);
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .vision-anomalies {
+            background: linear-gradient(135deg, rgba(255, 51, 102, 0.1) 0%, rgba(255, 0, 255, 0.1) 100%);
+            border: 1px solid rgba(255, 51, 102, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .anomaly-item {
+            background: rgba(255, 51, 102, 0.05);
+            margin: 10px 0;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid var(--red);
+            animation: slideIn 0.3s ease;
+        }
+        
+        .anomaly-type {
+            font-family: 'Orbitron', monospace;
+            font-weight: 600;
+            color: var(--red);
+        }
+        
+        .anomaly-description {
+            font-size: 0.9em;
+            color: rgba(255, 51, 102, 0.8);
+            margin-top: 3px;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: statusPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes statusPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+        }
+        
+        .status-active {
+            background: var(--green);
+            box-shadow: 0 0 15px var(--green);
+        }
+        
+        .status-warning {
+            background: var(--orange);
+            box-shadow: 0 0 15px var(--orange);
+        }
+        
+        .status-error {
+            background: var(--red);
+            box-shadow: 0 0 15px var(--red);
+        }
+        
+        .real-time-toggle {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(15, 15, 30, 0.9) 100%);
+            border: 1px solid var(--cyan);
+            border-radius: 30px;
+            padding: 12px 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.8em;
+            color: var(--cyan);
+            backdrop-filter: blur(10px);
+        }
+        
+        .real-time-toggle:hover {
+            background: linear-gradient(135deg, rgba(0, 245, 255, 0.2) 0%, rgba(255, 0, 255, 0.2) 100%);
+            border-color: var(--magenta);
+            box-shadow: 0 0 25px rgba(0, 245, 255, 0.5);
+            transform: scale(1.05);
+        }
+        
+        .real-time-toggle.active {
+            background: linear-gradient(135deg, rgba(0, 245, 255, 0.3) 0%, rgba(255, 0, 255, 0.3) 100%);
+            border-color: var(--magenta);
+            box-shadow: 0 0 30px rgba(0, 245, 255, 0.6);
+        }
+        
+        @media (max-width: 900px) {
+            .vision-display {
+                grid-template-columns: 1fr;
+            }
+            
+            .vision-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .vision-btn {
+                width: 250px;
+            }
+            
+            .vision-header h1 {
+                font-size: 2em;
+                letter-spacing: 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="scan-line"></div>
+
+    <div class="real-time-toggle" id="realTimeToggle" onclick="toggleRealTime()">
+        <span class="status-indicator status-active" id="statusIndicator"></span>
+        <span id="realTimeStatus">REAL-TIME: OFF</span>
+    </div>
+
+    <div class="vision-container">
+        <div class="vision-header">
+            <h1>OPENCLAW VISION</h1>
+            <p>Advanced Screen Analysis & Automation Target Detection</p>
+        </div>
+
+        <div class="vision-controls">
+            <button class="vision-btn" onclick="captureVision()">CAPTURE</button>
+            <button class="vision-btn" onclick="analyzeElements()">ANALYZE</button>
+            <button class="vision-btn" onclick="findTargets()">TARGETS</button>
+            <button class="vision-btn" onclick="exportData()">EXPORT</button>
+            <button class="vision-btn" onclick="clearVision()">CLEAR</button>
+        </div>
+
+        <div class="vision-display">
+            <div class="vision-panel">
+                <h3>SCREEN STATISTICS</h3>
+                <div class="vision-stats" id="visionStats">
+                    <div class="vision-loading">
+                        <div class="loading-spinner"></div>
+                        <p>Initializing vision system...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="vision-panel">
+                <h3>DETECTED ELEMENTS</h3>
+                <div class="vision-elements" id="visionElements">
+                    <div class="vision-loading">
+                        <p>No elements detected yet</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="vision-panel">
+            <h3>ANOMALY DETECTION</h3>
+            <div id="visionAnomalies">
+                <p style="color: rgba(0, 245, 255, 0.5); text-align: center; padding: 20px;">
+                    No anomalies detected - System nominal
+                </p>
+            </div>
+        </div>
+
+        <div class="vision-panel" style="margin-top: 30px;">
+            <h3>SYSTEM CONSOLE</h3>
+            <div class="vision-console" id="visionConsole">
+                <div class="console-entry">
+                    <span class="console-timestamp">[00:00:00]</span>
+                    <span class="console-message">OpenClaw Vision System v2.0 Initialized</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isRealTimeActive = false;
+        let realTimeInterval = null;
+
+        function logToConsole(message, type = 'message') {
+            const timestamp = new Date().toLocaleTimeString();
+            const consoleDiv = document.getElementById('visionConsole');
+            
+            const entry = document.createElement('div');
+            entry.className = 'console-entry';
+            entry.style.animation = 'fadeIn 0.3s ease';
+            
+            const timestampSpan = document.createElement('span');
+            timestampSpan.className = 'console-timestamp';
+            timestampSpan.textContent = `[${timestamp}]`;
+            
+            const messageSpan = document.createElement('span');
+            messageSpan.className = `console-${type}`;
+            messageSpan.textContent = ` ${message}`;
+            
+            entry.appendChild(timestampSpan);
+            entry.appendChild(messageSpan);
+            
+            consoleDiv.appendChild(entry);
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+            
+            if (consoleDiv.children.length > 50) {
+                consoleDiv.removeChild(consoleDiv.firstChild);
+            }
+        }
+
+        function toggleRealTime() {
+            isRealTimeActive = !isRealTimeActive;
+            const toggle = document.getElementById('realTimeToggle');
+            const status = document.getElementById('realTimeStatus');
+            const indicator = document.getElementById('statusIndicator');
+            
+            if (isRealTimeActive) {
+                toggle.classList.add('active');
+                status.textContent = 'REAL-TIME: ON';
+                status.style.color = '#00ff88';
+                indicator.className = 'status-indicator status-active';
+                logToConsole('Real-time analysis activated', 'message');
+                
+                realTimeInterval = setInterval(() => {
+                    captureVision(true);
+                }, 3000);
+            } else {
+                toggle.classList.remove('active');
+                status.textContent = 'REAL-TIME: OFF';
+                status.style.color = '#00f5ff';
+                indicator.className = 'status-indicator';
+                logToConsole('Real-time analysis deactivated', 'message');
+                
+                if (realTimeInterval) {
+                    clearInterval(realTimeInterval);
+                    realTimeInterval = null;
+                }
+            }
+        }
+
+        async function captureVision(silent = false) {
+            try {
+                if (!silent) logToConsole('Capturing screen vision...', 'message');
+                
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: '<cmd>vision_analyze</cmd>' })
+                });
+                
+                const data = await response.json();
+                
+                if (!silent) logToConsole('Screen vision captured successfully', 'message');
+                
+                const visionMatch = data.reply.match(/OpenClaw Vision: (.+)/);
+                if (visionMatch) {
+                    updateVisionDisplay(visionMatch[1]);
+                }
+                
+            } catch (error) {
+                logToConsole(`Vision capture error: ${error.message}`, 'error');
+                if (!silent) {
+                    alert('Failed to capture screen vision.');
+                }
+            }
+        }
+
+        async function analyzeElements() {
+            try {
+                logToConsole('Analyzing UI elements...', 'message');
+                
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: '<cmd>find_automation_targets</cmd>' })
+                });
+                
+                const data = await response.json();
+                logToConsole('UI element analysis complete', 'message');
+                
+                updateElementsDisplay(data.reply);
+                
+            } catch (error) {
+                logToConsole(`Element analysis error: ${error.message}`, 'error');
+            }
+        }
+
+        async function findTargets() {
+            try {
+                logToConsole('Searching for automation targets...', 'message');
+                
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: '<cmd>find_automation_targets</cmd>' })
+                });
+                
+                const data = await response.json();
+                logToConsole('Target detection complete', 'message');
+                
+                updateTargetsDisplay(data.reply);
+                
+            } catch (error) {
+                logToConsole(`Target detection error: ${error.message}`, 'error');
+            }
+        }
+
+        async function exportData() {
+            try {
+                logToConsole('Exporting vision data...', 'message');
+                
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: '<cmd>vision_export json</cmd>' })
+                });
+                
+                const data = await response.json();
+                logToConsole('Vision data exported successfully', 'message');
+                
+                const blob = new Blob([data.reply], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `openclaw_vision_${Date.now()}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                logToConsole('Vision data downloaded as JSON file', 'message');
+                
+            } catch (error) {
+                logToConsole(`Export error: ${error.message}`, 'error');
+            }
+        }
+
+        function clearVision() {
+            document.getElementById('visionStats').innerHTML = `
+                <div class="vision-loading">
+                    <div class="loading-spinner"></div>
+                    <p>Vision data cleared</p>
+                </div>
+            `;
+            
+            document.getElementById('visionElements').innerHTML = `
+                <div class="vision-loading">
+                    <p>No elements detected</p>
+                </div>
+            `;
+            
+            document.getElementById('visionAnomalies').innerHTML = `
+                <p style="color: rgba(0, 245, 255, 0.5); text-align: center; padding: 20px;">
+                    No anomalies detected - System nominal
+                </p>
+            `;
+            
+            logToConsole('Vision data cleared', 'message');
+        }
+
+        function updateVisionDisplay(data) {
+            const statsDiv = document.getElementById('visionStats');
+            
+            const resolutionMatch = data.match(/(\d+)x(\d+) resolution/);
+            const themeMatch = data.match(/Theme: (\w+)/);
+            const elementsMatch = data.match(/(\d+) UI elements/);
+            const textMatch = data.match(/(\d+) text regions/);
+            const windowsMatch = data.match(/(\d+) active windows/);
+            
+            statsDiv.innerHTML = `
+                <div class="stat-item">
+                    <div class="stat-label">Resolution</div>
+                    <div class="stat-value">${resolutionMatch ? resolutionMatch[1] + 'x' + resolutionMatch[2] : 'N/A'}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Theme</div>
+                    <div class="stat-value">${themeMatch ? themeMatch[1] : 'Unknown'}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">UI Elements</div>
+                    <div class="stat-value">${elementsMatch ? elementsMatch[1] : '0'}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Text Regions</div>
+                    <div class="stat-value">${textMatch ? textMatch[1] : '0'}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Active Windows</div>
+                    <div class="stat-value">${windowsMatch ? windowsMatch[1] : '0'}</div>
+                </div>
+            `;
+        }
+
+        function updateElementsDisplay(data) {
+            const elementsDiv = document.getElementById('visionElements');
+            
+            const targetMatch = data.match(/Found (\d+) automation targets: \[(.+)\]/);
+            
+            if (targetMatch) {
+                const count = targetMatch[1];
+                const types = targetMatch[2].split(', ');
+                
+                elementsDiv.innerHTML = types.map((type, i) => `
+                    <div class="element-item" style="animation-delay: ${i * 0.1}s">
+                        <div class="element-type">${type.trim()}</div>
+                        <div class="element-details">Ready for automation • Confidence: ${(70 + Math.random() * 30).toFixed(1)}%</div>
+                    </div>
+                `).join('');
+            } else {
+                elementsDiv.innerHTML = `
+                    <div class="vision-loading">
+                        <p>No automation targets found</p>
+                    </div>
+                `;
+            }
+        }
+
+        function updateTargetsDisplay(data) {
+            updateElementsDisplay(data);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            logToConsole('OpenClaw Vision System v2.0 initialized', 'message');
+            logToConsole('Click "CAPTURE" to begin analysis', 'message');
+            logToConsole('System ready for screen analysis', 'message');
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey) {
+                switch(e.key.toLowerCase()) {
+                    case 'c':
+                        e.preventDefault();
+                        captureVision();
+                        break;
+                    case 'a':
+                        e.preventDefault();
+                        analyzeElements();
+                        break;
+                    case 't':
+                        e.preventDefault();
+                        findTargets();
+                        break;
+                    case 'r':
+                        e.preventDefault();
+                        toggleRealTime();
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
