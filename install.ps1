@@ -1,6 +1,6 @@
 # ALPHA OMEGA - Windows PowerShell Installer
 # Version: 2.0.0
-# Repository: https://github.com/YOUR_USERNAME/alpha
+# Repository: https://github.com/holamoniess-pixel/The-Alpha
 
 param(
     [string]$InstallDir = "C:\AlphaOmega",
@@ -14,8 +14,8 @@ param(
 $ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
 
-$REPO_OWNER = "YOUR_USERNAME"
-$REPO_NAME = "alpha"
+$REPO_OWNER = "holamoniess-pixel"
+$REPO_NAME = "The-Alpha"
 $REPO_URL = "https://github.com/$REPO_OWNER/$REPO_NAME"
 
 function Write-Header {

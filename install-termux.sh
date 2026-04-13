@@ -1,7 +1,7 @@
 #!/bin/bash
 # ALPHA OMEGA - Termux (Android) Installer - LITE VERSION
 set -e
-REPO_OWNER="YOUR_USERNAME"; REPO_NAME="alpha"
+REPO_OWNER="holamoniess-pixel"; REPO_NAME="The-Alpha"
 
 echo "╔══════════════════════════════════════════════════╗"
 echo "║   ALPHA OMEGA v2.0.0 - Termux Installer         ║"
