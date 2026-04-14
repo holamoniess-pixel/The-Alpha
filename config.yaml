@@ -18,9 +18,9 @@ voice:
   sample_rate: 16000
   chunk_size: 1024
   timeout: 5
-  sensitivity: 0.5
+  sensitivity: 0.8
   noise_reduction: true
-  wake_word_sensitivity: 0.8
+  wake_word_sensitivity: 1.0
   command_timeout: 10
 
 intelligence:
