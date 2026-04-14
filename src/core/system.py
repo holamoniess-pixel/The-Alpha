@@ -227,7 +227,9 @@ class AlphaOmegaCore:
                     module = __import__(module_path, fromlist=[class_name])
                     component_class = getattr(module, class_name)
 
-                    if comp_name == "memory":
+                    if comp_name == "voice":
+                        component = component_class(self.config.__dict__, wake_word=self.config.wake_word)
+                    elif comp_name == "memory":
                         component = component_class(self.config.__dict__)
                     elif comp_name == "vault":
                         component = component_class()
