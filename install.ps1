@@ -330,7 +330,7 @@ function Configure-OSIntegration {
     Write-Header "OS INTEGRATION SETUP"
     
     # Malware scanning
-    $malwareScanning = Read-Host "[?] Enable malware scanning for downloaded files? [Y/n]"
+    $malwareScanning = 'Y'
     if ($malwareScanning -eq "" -or $malwareScanning -eq "Y" -or $malwareScanning -eq "y") {
         Write-Success "Malware scanning enabled"
         $script:EnableMalware = $true
@@ -345,7 +345,7 @@ function Configure-OSIntegration {
     Write-Host "  Requires administrator privileges and will show security warning." -ForegroundColor White
     Write-Host ""
     
-    $loginBypass = Read-Host "[?] Replace Windows Login with Voice Auth? [y/N]"
+    $loginBypass = 'N'
     if ($loginBypass -eq "Y" -or $loginBypass -eq "y") {
         if (Test-Administrator) {
             Write-Success "Windows Login Bypass enabled (will configure after installation)"
@@ -360,7 +360,7 @@ function Configure-OSIntegration {
     
     # Sleep Mode
     Write-Host ""
-    $sleepMode = Read-Host "[?] Allow Alpha to work while PC is in sleep mode? [Y/n]"
+    $sleepMode = 'Y'
     if ($sleepMode -eq "" -or $sleepMode -eq "Y" -or $sleepMode -eq "y") {
         Write-Success "Sleep mode operation enabled"
         $script:EnableSleepMode = $true
@@ -370,7 +370,7 @@ function Configure-OSIntegration {
     
     # Watch & Learn
     Write-Host ""
-    $watchLearn = Read-Host "[?] Enable Watch & Learn mode (asks before recording)? [Y/n]"
+    $watchLearn = 'Y'
     if ($watchLearn -eq "" -or $watchLearn -eq "Y" -or $watchLearn -eq "y") {
         Write-Success "Watch & Learn enabled"
         $script:EnableWatchLearn = $true
@@ -384,7 +384,7 @@ function Create-DesktopShortcut {
     
     if ($NoDesktopShortcut) { return }
     
-    $shortcut = Read-Host "[?] Create desktop shortcut? [Y/n]"
+    $shortcut = 'Y'
     if ($shortcut -eq "" -or $shortcut -eq "Y" -or $shortcut -eq "y") {
         $WshShell = New-Object -ComObject WScript.Shell
         $ShortcutPath = "$([Environment]::GetFolderPath('Desktop'))\Alpha Omega.lnk"
@@ -401,7 +401,7 @@ function Create-DesktopShortcut {
         Write-Host ""
         Write-Host "  Set custom hotkey to toggle Alpha Omega:" -ForegroundColor White
         Write-Host "  Press your desired key combination (or press Enter for default Ctrl+Shift+A)" -ForegroundColor Gray
-        $hotkey = Read-Host "[?] Hotkey"
+        $hotkey = ''"
         
         if ($hotkey -eq "") {
             $hotkey = "Ctrl+Shift+A"
@@ -416,7 +416,7 @@ function Configure-AutoStart {
     
     if ($NoAutoStart) { return }
     
-    $autostart = Read-Host "[?] Start Alpha Omega automatically on boot? [Y/n]"
+    $autostart = 'Y'
     if ($autostart -eq "" -or $autostart -eq "Y" -or $autostart -eq "y") {
         $regPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"
         Set-ItemProperty -Path $regPath -Name "AlphaOmega" -Value "`"$InstallDir\.venv\Scripts\pythonw.exe`" `"$InstallDir\run_alpha.py`"" -Force
@@ -462,7 +462,7 @@ learning:
 function Start-AlphaOmega {
     param([string]$InstallDir)
     
-    $start = Read-Host "[?] Start Alpha Omega now? [Y/n]"
+    $start = 'Y'
     if ($start -eq "" -or $start -eq "Y" -or $start -eq "y") {
         Write-Step "Starting Alpha Omega..."
         Start-Process -FilePath "$InstallDir\.venv\Scripts\pythonw.exe" -ArgumentList "`"$InstallDir\run_alpha.py`"" -WorkingDirectory $InstallDir
@@ -483,7 +483,7 @@ try {
     
     # Accept risks
     if (-not $Silent) {
-        $accept = Read-Host "Do you understand and accept these risks? [Y/n]"
+        $accept = 'Y'
         if ($accept -ne "" -and $accept -ne "Y" -and $accept -ne "y") {
             Write-Host "Installation cancelled."
             exit 1
@@ -523,7 +523,7 @@ try {
         Write-Host "    • Voice recognition will use cloud fallback" -ForegroundColor Yellow
         Write-Host ""
         
-        $proceed = Read-Host "[?] Proceed anyway? [y/N]"
+        $proceed = 'Y'
         if ($proceed -ne "Y" -and $proceed -ne "y") {
             Write-Host "Installation cancelled."
             exit 1
