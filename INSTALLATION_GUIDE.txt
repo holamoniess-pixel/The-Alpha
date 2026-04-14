@@ -1,178 +1,44 @@
-# THE ALPHA - INSTALLATION GUIDE
+# THE ALPHA - QUICK START GUIDE
 
 ================================================================================
-                        THE ALPHA INSTALLATION GUIDE
+                        🚀 ONE-CLICK INSTALLATION
 ================================================================================
 
-Download the latest release from:
-https://github.com/holamoniess-pixel/The-Alpha/releases
+Open PowerShell (as Administrator) and paste this single command:
 
-================================================================================
-                        ONE-LINER INSTALLATION COMMANDS
-================================================================================
-
-WINDOWS (PowerShell - Admin Required)
---------------------------------------
 irm https://raw.githubusercontent.com/holamoniess-pixel/The-Alpha/main/install.ps1 | iex
 
-WINDOWS (Alternative - CMD)
-----------------------------
-powershell -Command "irm https://raw.githubusercontent.com/holamoniess-pixel/The-Alpha/main/install.ps1 | iex"
-
-LINUX
------
-curl -sSL https://raw.githubusercontent.com/holamoniess-pixel/The-Alpha/main/install.sh | bash
-
-MAC
----
-curl -sSL https://raw.githubusercontent.com/holamoniess-pixel/The-Alpha/main/install.sh | bash
-
-TERMUX (Android)
-----------------
-curl -sSL https://raw.githubusercontent.com/holamoniess-pixel/The-Alpha/main/install-termux.sh | bash
-
 ================================================================================
-                        ZIP FILE INSTALLATION
+                        💡 WHAT HAPPENS NEXT?
 ================================================================================
 
-1. Download the ZIP file from:
-   https://github.com/holamoniess-pixel/The-Alpha/archive/refs/heads/main.zip
-
-2. Extract the ZIP file to your desired location
-
-3. Navigate to the extracted folder
-
-4. Run the installer for your platform:
-
-   WINDOWS:
-   --------
-   Option A - PowerShell (Recommended):
-   Press Win + X, select "Windows PowerShell (Admin)"
-   Navigate to extracted folder
-   Run: .\install.ps1
-
-   Option B - CMD:
-   Open CMD as Administrator
-   Navigate to extracted folder
-   Run: install.bat
-
-   LINUX / MAC:
-   ------------
-   Open Terminal
-   Navigate to extracted folder
-   Run: chmod +x install.sh && ./install.sh
-
-   TERMUX (Android):
-   -----------------
-   Open Termux
-   Navigate to extracted folder
-   Run: chmod +x install-termux.sh && ./install-termux.sh
+1. The installer will automatically set up Python, AI Models, and Browsers.
+2. It will handle all technical steps without asking you 100 questions.
+3. The Alpha Dashboard will automatically open in your browser.
+4. An interactive terminal will appear so you can start talking to Alpha.
 
 ================================================================================
-                        MANUAL INSTALLATION STEPS
+                        🛠️ HOW TO USE
 ================================================================================
 
-WINDOWS
--------
-1. Install Python 3.8+ from https://python.org
-2. Install Node.js 16+ from https://nodejs.org
-3. Open PowerShell as Administrator
-4. Clone or extract the project
-5. Run: pip install -r requirements.txt
-6. Run: cd apps/ui && npm install
-7. Run: cd ../.. && python install.py
-
-LINUX
------
-1. Install Python 3.8+: sudo apt install python3 python3-pip
-2. Install Node.js: sudo apt install nodejs npm
-3. Extract or clone the project
-4. Run: pip3 install -r requirements.txt
-5. Run: cd apps/ui && npm install
-6. Run: cd ../.. && python3 install.py
-
-MAC
----
-1. Install Homebrew: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-2. Install Python: brew install python
-3. Install Node: brew install node
-4. Extract or clone the project
-5. Run: pip3 install -r requirements.txt
-6. Run: cd apps/ui && npm install
-7. Run: cd ../.. && python3 install.py
-
-TERMUX (Android)
-----------------
-1. Install Python: pkg install python
-2. Install Node.js: pkg install nodejs
-3. Extract or clone the project
-4. Run: pip install -r requirements.txt
-5. Run: cd apps/ui && npm install
-6. Run: cd ../.. && python install.py
+VOICE: Say "Hey Alpha" to wake it up.
+TEXT: Type commands directly into the terminal window.
+WEB: Open http://localhost:8000/ui to manage settings and security.
 
 ================================================================================
-                        REQUIREMENTS
+                        ⚠️ SYSTEM REQUIREMENTS
 ================================================================================
 
-- Python 3.8 or higher
-- Node.js 16 or higher
-- 4GB RAM minimum
-- 2GB free disk space
-- Internet connection (for installation)
+- Windows 10/11
+- Internet Connection (for initial setup)
+- Microphone (for voice commands)
 
 ================================================================================
-                        QUICK START AFTER INSTALLATION
+                        🆘 SUPPORT
 ================================================================================
 
-WINDOWS:
---------
-python start_alpha.py
+If something isn't working, simply run the installer command again. It is 
+self-healing and will fix any missing components automatically.
 
-LINUX / MAC:
-------------
-python3 start_alpha.py
-
-TERMUX:
--------
-python start_alpha.py
-
-================================================================================
-                        UNINSTALLATION
-================================================================================
-
-WINDOWS:
----------
-powershell -File uninstall.ps1
-
-LINUX / MAC:
-------------
-./uninstall.sh
-
-TERMUX:
--------
-./uninstall.sh
-
-================================================================================
-                        TROUBLESHOOTING
-================================================================================
-
-ISSUE: "python is not recognized"
-SOLUTION: Add Python to PATH or use python3
-
-ISSUE: "npm is not recognized"
-SOLUTION: Restart terminal or add Node.js to PATH
-
-ISSUE: Permission denied (Linux/Mac/Termux)
-SOLUTION: chmod +x install.sh
-
-ISSUE: Installation fails
-SOLUTION: Run as administrator/sudo
-
-================================================================================
-                        SUPPORT
-================================================================================
-
-For issues and feature requests:
-https://github.com/holamoniess-pixel/The-Alpha/issues
-
-================================================================================
+For developer documentation, visit: 
+https://github.com/holamoniess-pixel/The-Alpha
